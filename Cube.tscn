@@ -1,9 +1,119 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=13 format=2]
 
 [sub_resource type="CubeMesh" id=1]
+
+[sub_resource type="VisualShaderNodeColorConstant" id=4]
+constant = Color( 1, 0, 0, 0.247059 )
+
+[sub_resource type="VisualShaderNodeInput" id=13]
+input_name = "color"
+
+[sub_resource type="VisualShaderNodeInput" id=5]
+input_name = "vertex"
+
+[sub_resource type="VisualShaderNodeVectorOp" id=6]
+default_input_values = [ 0, Vector3( 0, 0, 0 ), 1, Vector3( 0, 0, 1 ) ]
+operator = 2
+
+[sub_resource type="VisualShaderNodeInput" id=7]
+input_name = "time"
+
+[sub_resource type="VisualShaderNodeVectorCompose" id=9]
+
+[sub_resource type="VisualShaderNodeScalarFunc" id=10]
+function = 0
+
+[sub_resource type="VisualShaderNodeScalarOp" id=11]
+
+[sub_resource type="VisualShaderNodeScalarConstant" id=12]
+constant = 2.0
+
+[sub_resource type="VisualShader" id=2]
+code = "shader_type spatial;
+render_mode specular_schlick_ggx;
+
+
+
+
+void vertex() {
+// Input:2
+	vec3 n_out2p0 = VERTEX;
+
+// Input:4
+	float n_out4p0 = TIME;
+
+// ScalarFunc:7
+	float n_out7p0 = sin(n_out4p0);
+
+// Scalar:9
+	float n_out9p0 = 2.000000;
+
+// ScalarOp:8
+	float n_out8p0 = n_out7p0 + n_out9p0;
+
+// VectorCompose:6
+	vec3 n_out6p0 = vec3(n_out8p0, n_out8p0, n_out8p0);
+
+// VectorOp:3
+	vec3 n_out3p0 = n_out2p0 * n_out6p0;
+
+// Output:0
+	VERTEX = n_out3p0;
+	COLOR.rgb = n_out3p0;
+
+}
+
+void fragment() {
+// Input:4
+	vec3 n_out4p0 = COLOR.rgb;
+
+// Color:3
+	vec3 n_out3p0 = vec3(1.000000, 0.000000, 0.000000);
+	float n_out3p1 = 0.247059;
+
+// Output:0
+	ALBEDO = n_out4p0;
+	ALPHA = n_out3p1;
+
+}
+
+void light() {
+// Output:0
+
+}
+"
+graph_offset = Vector2( -266.534, 300.032 )
+nodes/vertex/0/position = Vector2( 500, 160 )
+nodes/vertex/2/node = SubResource( 5 )
+nodes/vertex/2/position = Vector2( -120, 160 )
+nodes/vertex/3/node = SubResource( 6 )
+nodes/vertex/3/position = Vector2( 260, 100 )
+nodes/vertex/4/node = SubResource( 7 )
+nodes/vertex/4/position = Vector2( -540, 220 )
+nodes/vertex/6/node = SubResource( 9 )
+nodes/vertex/6/position = Vector2( 40, 240 )
+nodes/vertex/7/node = SubResource( 10 )
+nodes/vertex/7/position = Vector2( -380, 320 )
+nodes/vertex/8/node = SubResource( 11 )
+nodes/vertex/8/position = Vector2( -180, 340 )
+nodes/vertex/9/node = SubResource( 12 )
+nodes/vertex/9/position = Vector2( -520, 440 )
+nodes/vertex/connections = PoolIntArray( 2, 0, 3, 0, 3, 0, 0, 0, 6, 0, 3, 1, 4, 0, 7, 0, 8, 0, 6, 2, 8, 0, 6, 1, 8, 0, 6, 0, 7, 0, 8, 0, 9, 0, 8, 1, 3, 0, 0, 6 )
+nodes/fragment/0/position = Vector2( 500, 60 )
+nodes/fragment/3/node = SubResource( 4 )
+nodes/fragment/3/position = Vector2( 0, 80 )
+nodes/fragment/4/node = SubResource( 13 )
+nodes/fragment/4/position = Vector2( -320, 300 )
+nodes/fragment/connections = PoolIntArray( 3, 1, 0, 1, 4, 0, 0, 0 )
+
+[sub_resource type="ShaderMaterial" id=3]
+shader = SubResource( 2 )
 
 [node name="Cube" type="Spatial"]
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
 mesh = SubResource( 1 )
-material/0 = null
+material/0 = SubResource( 3 )
+
+[node name="Camera" type="Camera" parent="MeshInstance"]
+transform = Transform( 0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 4, 1, 4 )
